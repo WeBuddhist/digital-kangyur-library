@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/atoms/button";
-import { RichTextEditor } from "@/components/ui/molecules/RichTextEditor";
+import { MarkdownEditor } from "@/components/ui/molecules/MarkdownEditor";
 import { Label } from "@/components/ui/atoms/label";
 import {
   Dialog,
@@ -307,10 +307,10 @@ export const TextSummaryForm = ({ isOpen, onClose, textId, textTitle, onSave }: 
                           <Label htmlFor={`${currentSectionFields.english}`}>
                             {t('englishContent')}
                           </Label>
-                          <RichTextEditor
+                          <MarkdownEditor
                             id={currentSectionFields.english}
                             value={formData[currentSectionFields.english] ?? ''}
-                            onChange={(html) => setFormData({ ...formData, [currentSectionFields.english]: html })}
+                            onChange={(markdown) => setFormData({ ...formData, [currentSectionFields.english]: markdown })}
                             rows={currentSectionFields.rows}
                           />
                         </div>
@@ -318,10 +318,10 @@ export const TextSummaryForm = ({ isOpen, onClose, textId, textTitle, onSave }: 
                           <Label htmlFor={`${currentSectionFields.tibetan}`}>
                             {t('tibetanContent')}
                           </Label>
-                          <RichTextEditor
+                          <MarkdownEditor
                             id={currentSectionFields.tibetan}
                             value={formData[currentSectionFields.tibetan] ?? ''}
-                            onChange={(html) => setFormData({ ...formData, [currentSectionFields.tibetan]: html })}
+                            onChange={(markdown) => setFormData({ ...formData, [currentSectionFields.tibetan]: markdown })}
                             rows={currentSectionFields.rows}
                             tibetan
                           />

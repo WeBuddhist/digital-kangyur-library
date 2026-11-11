@@ -9,6 +9,7 @@
  * execute in a reader's browser.
  */
 import DOMPurify from 'dompurify';
+import { markdownToPlain } from './markdown';
 
 /** Tags the editor's toolbar can produce, plus the ones legacy pasted markup tends to carry. */
 const ALLOWED_TAGS = [
@@ -144,7 +145,9 @@ export function isRichTextEmpty(value: string | null | undefined): boolean {
 /** Flattens rich text to a single line, for card excerpts, search and meta tags. */
 export function richTextToPlain(value: string | null | undefined): string {
   if (!value) return '';
-  if (!isHtmlContent(value)) return value;
+  // Non-HTML values are legacy plain text or Markdown (summary sections); strip
+  // Markdown syntax and footnotes so excerpts don't show `**` or `[^3]`.
+  if (!isHtmlContent(value)) return markdownToPlain(value);
   const withBreaks = value
     .replace(/<\/(p|div|h[1-6]|li|blockquote|tr)>/gi, '\n')
     .replace(/<br\s*\/?>/gi, '\n');

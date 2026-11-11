@@ -284,7 +284,6 @@
     "createUser": "སྤྱོད་མཁན་གསར་པ་བཟོ་བ།",
     "username": "སྤྱོད་མཁན་མཚན།",
     "enterUsername": "སྤྱོད་མཁན་མཚན་འཇུག",
-    "email": "གློག་འཕྲིན།",
     "adminEmailPlaceholder": "admin@kangyur.org",
     "userEmailPlaceholder": "user@example.com",
     "password": "གསང་ཚིག",
@@ -306,5 +305,17 @@
     "narthangLink": "སྣར་ཐང་པར་མའི་དྲ་ཐག",
     "enterPecingLinkUrl": "པེ་ཅིང་པར་མའི་དྲ་ཐག་འཇུག",
     "enterNarthangLinkUrl": "སྣར་ཐང་པར་མའི་དྲ་ཐག་འཇུག",
-    "link": "ཁ་བྱང་།"
+    "link": "ཁ་བྱང་།",
+    "footnotes": "མཆན་བུ།",
+    "footnotesCount": "མཆན་བུ ({{count}})",
+    "addFootnote": "མཆན་བུ།",
+    "addFootnoteHint": "འོད་རྟགས་ཡོད་སར་མཆན་རྟགས་འཇུག་ནས་མཇུག་ཏུ་མཆན་བུ་སྣོན་པ།",
+    "markdownView": "Markdown",
+    "preview": "སྔོན་ལྟ།",
+    "bold": "ཡིག་གཟུགས་སྦོམ།",
+    "italic": "ཡིག་གཟུགས་གསེག",
+    "nothingToPreview": "སྔོན་ལྟ་བྱེད་རྒྱུ་ད་དུང་མེད།",
+    "footnoteMissingDefinition": "{{labels}} ལ་མཆན་བུ་བྲིས་མེད། \"[^1]: མཆན་བུ།\" ལྟ་བུ་སྣོན་རོགས།",
+    "footnoteUnusedDefinition": "མཆན་བུ་ {{labels}} ནང་དོན་ནང་སྦྲེལ་མེད་པས་སྟོན་མི་ཐུབ།",
+    "backToContent": "ནང་དོན་ལ་ཕྱིར་ལོག"
 }

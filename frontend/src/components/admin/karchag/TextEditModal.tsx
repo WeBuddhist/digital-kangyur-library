@@ -23,7 +23,7 @@ import { Card, CardContent } from "@/components/ui/atoms/card";
 import { useLanguage } from '@/hooks/useLanguage';
 import { toast } from 'sonner';
 import api from '@/utils/api';
-import { RichTextEditor } from "@/components/ui/molecules/RichTextEditor";
+import { MarkdownEditor } from "@/components/ui/molecules/MarkdownEditor";
 import { cn } from '@/lib/utils';
 
 interface TextEditModalProps {
@@ -939,10 +939,10 @@ export const TextEditModal = ({
                                       <Label htmlFor={`${currentSectionFields.tibetan}`}>
                                         {t('tibetanContent')}
                                       </Label>
-                                      <RichTextEditor
+                                      <MarkdownEditor
                                         id={currentSectionFields.tibetan}
                                         value={summaryFormData[currentSectionFields.tibetan] ?? ''}
-                                        onChange={(html) => setSummaryFormData({ ...summaryFormData, [currentSectionFields.tibetan]: html })}
+                                        onChange={(markdown) => setSummaryFormData({ ...summaryFormData, [currentSectionFields.tibetan]: markdown })}
                                         rows={currentSectionFields.rows}
                                         tibetan
                                       />
@@ -951,10 +951,10 @@ export const TextEditModal = ({
                                       <Label htmlFor={`${currentSectionFields.english}`}>
                                         {t('englishContent')}
                                       </Label>
-                                      <RichTextEditor
+                                      <MarkdownEditor
                                         id={currentSectionFields.english}
                                         value={summaryFormData[currentSectionFields.english] ?? ''}
-                                        onChange={(html) => setSummaryFormData({ ...summaryFormData, [currentSectionFields.english]: html })}
+                                        onChange={(markdown) => setSummaryFormData({ ...summaryFormData, [currentSectionFields.english]: markdown })}
                                         rows={currentSectionFields.rows}
                                       />
                                     </div>

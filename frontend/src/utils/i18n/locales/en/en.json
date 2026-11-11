@@ -284,7 +284,6 @@
     "createUser": "Create User",
     "username": "Username",
     "enterUsername": "Enter username",
-    "email": "Email",
     "adminEmailPlaceholder": "admin@kangyur.org",
     "userEmailPlaceholder": "user@example.com",
     "password": "Password",
@@ -306,5 +305,17 @@
     "narthangLink": "Narthang Link",
     "enterPecingLinkUrl": "Enter Pecing link URL",
     "enterNarthangLinkUrl": "Enter Narthang link URL",
-    "link": "Link"
+    "link": "Link",
+    "footnotes": "Footnotes",
+    "footnotesCount": "Footnotes ({{count}})",
+    "addFootnote": "Footnote",
+    "addFootnoteHint": "Insert a footnote reference at the cursor and add its note at the end",
+    "markdownView": "Markdown",
+    "preview": "Preview",
+    "bold": "Bold",
+    "italic": "Italic",
+    "nothingToPreview": "Nothing to preview yet.",
+    "footnoteMissingDefinition": "No note written for {{labels}}. Add a line like \"[^1]: your note\".",
+    "footnoteUnusedDefinition": "Note {{labels}} is not referenced in the text, so it will not be shown.",
+    "backToContent": "Back to content"
 }

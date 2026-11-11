@@ -9,7 +9,7 @@ import Breadcrumb from '@/components/ui/atoms/Breadcrumb';
 import useLanguage from '@/hooks/useLanguage';
 import api from '@/utils/api';
 import { pickBilingualDisplay, pickBilingualText } from '@/utils/localizedContent';
-import { RichTextContent } from '@/components/ui/molecules/RichTextContent';
+import { MarkdownContent } from '@/components/ui/molecules/MarkdownContent';
 
 
 
@@ -521,7 +521,7 @@ const TextDetail = () => {
                                 >
                                   {t(sectionTitleMap[section.id as keyof typeof sectionTitleMap])}
                                 </h3>
-                                <RichTextContent
+                                <MarkdownContent
                                   value={section.content}
                                   tibetan={section.scriptIsTibetan}
                                   className="text-base sm:text-lg leading-relaxed text-foreground break-words"
