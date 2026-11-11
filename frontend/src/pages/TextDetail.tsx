@@ -453,7 +453,7 @@ const TextDetail = () => {
                     {!loadingSummary && (hasMetadata || (summaryData?.sections && summaryData.sections.length > 0)) && (
                       <div className="flex flex-col md:flex-row h-auto md:h-[70vh] overflow-hidden">
                         {/* Left Navigation Bar */}
-                        <div className="md:w-1/4 lg:w-1/5 border-b md:border-b-0 md:border-r border-border bg-muted/30 max-h-56 md:max-h-none md:h-full overflow-y-auto shrink-0">
+                        <div className="md:w-1/4 lg:w-1/5 border-b md:border-b-0 md:border-r border-border bg-muted/30 max-h-56 md:max-h-none md:h-full overflow-y-auto overscroll-contain shrink-0">
                           <div className="p-3 sm:p-4">
 
                             <nav className="space-y-2">
@@ -492,7 +492,7 @@ const TextDetail = () => {
 
                         {/* Right Text Reader - metadata + all sections rendered continuously, scrolls independently of the page */}
                         <div className="flex-1 flex flex-col min-h-0">
-                          <div ref={scrollContainerRef} className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6">
+                          <div ref={scrollContainerRef} className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-4 sm:p-6">
                             {hasMetadata && (
                               <div
                                 ref={(el) => { sectionRefs.current['metadata'] = el; }}

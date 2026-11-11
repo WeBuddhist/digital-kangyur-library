@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/atoms/button';
@@ -15,6 +15,9 @@ import { TextCard } from './TextCard';
 import { TextEditModal } from './TextEditModal';
 import { useLanguage } from '@/hooks/useLanguage';
 import { isContentOnlyCategory } from '@/utils/karchagCategory';
+import { AdminPagination } from '../AdminPagination';
+
+const TEXTS_PER_PAGE = 10;
 
 function newTextDraft(subCategoryId: string) {
   return {
@@ -79,6 +82,7 @@ export const SubCategoryView: React.FC = () => {
   const queryClient = useQueryClient();
   const { t, isTibetan } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
   const [editingCategory, setEditingCategory] = useState<any>(null);
   const [editingText, setEditingText] = useState<any>(null);
   const [isCategoryFormOpen, setIsCategoryFormOpen] = useState(false);
@@ -263,6 +267,24 @@ export const SubCategoryView: React.FC = () => {
     text.sanskrit_title?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  // Back to page 1 when the search or subcategory changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, subId]);
+
+  // Keep the page in range if texts are deleted
+  const totalPages = Math.max(1, Math.ceil(filteredTexts.length / TEXTS_PER_PAGE));
+  const safePage = Math.min(currentPage, totalPages);
+  const paginatedTexts = filteredTexts.slice(
+    (safePage - 1) * TEXTS_PER_PAGE,
+    safePage * TEXTS_PER_PAGE
+  );
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -377,7 +399,7 @@ export const SubCategoryView: React.FC = () => {
       ) : (
         // For Discourses: Show texts
         <div className="space-y-4 ">
-          {filteredTexts.map((text: any) => (
+          {paginatedTexts.map((text: any) => (
             <TextCard
               key={text.id}
               text={text}
@@ -392,6 +414,12 @@ export const SubCategoryView: React.FC = () => {
               <p className="text-gray-500">{t('noTextsFound')}</p>
             </div>
           )}
+          <AdminPagination
+            currentPage={safePage}
+            totalItems={filteredTexts.length}
+            itemsPerPage={TEXTS_PER_PAGE}
+            onPageChange={handlePageChange}
+          />
         </div>
       )}
 
