@@ -23,6 +23,18 @@
   color: inherit;
 }
 
+/* More specific than `.tibetan`, which this rule's font-family: inherit would
+   otherwise cancel. Same webfont the sutra text tab shows. */
+.rich-text-content.ql-editor.tibetan {
+  font-family: 'CustomTibetan', 'Noto Sans Tibetan', serif;
+  letter-spacing: 0.025em;
+}
+
+/* Beats the reader's color: inherit so Tailwind's gray-600 actually shows. */
+.rich-text-content.ql-editor.text-gray-600 {
+  color: #4b5563;
+}
+
 .rich-text-content.ql-editor > * {
   cursor: auto;
 }
