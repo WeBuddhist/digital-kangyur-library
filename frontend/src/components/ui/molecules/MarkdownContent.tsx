@@ -5,7 +5,7 @@ import remarkBreaks from 'remark-breaks';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import { isHtmlContent } from '@/utils/richText';
-import { markdownToPlain } from '@/utils/markdown';
+import { markdownToPlain, unescapeJsonText } from '@/utils/markdown';
 import { RichTextContent } from './RichTextContent';
 
 interface MarkdownContentProps {
@@ -34,13 +34,15 @@ function collectFootnoteNotes(markdown: string): Map<string, string> {
  * so nothing stored here can execute. Values that are already HTML - written by
  * the old Quill editor - are handed to `RichTextContent` unchanged.
  */
-export const MarkdownContent = ({ value, tibetan = false, className }: MarkdownContentProps) => {
+export const MarkdownContent = ({ value: rawValue, tibetan = false, className }: MarkdownContentProps) => {
+  // Content pasted from a JSON file may hold `\n` escapes instead of line breaks.
+  const value = useMemo(() => unescapeJsonText(rawValue || ''), [rawValue]);
   const { t } = useTranslation();
   // Several sections on one page can each use `[^3]`; a per-instance prefix
   // keeps their element ids (and therefore the jump links) apart.
   const prefix = `md${useId().replace(/[^a-zA-Z0-9]/g, '')}-`;
 
-  const notes = useMemo(() => collectFootnoteNotes(value || ''), [value]);
+  const notes = useMemo(() => collectFootnoteNotes(value), [value]);
 
   const components = useMemo<Components>(
     () => ({
@@ -98,7 +100,8 @@ export const MarkdownContent = ({ value, tibetan = false, className }: MarkdownC
           clobberPrefix: prefix,
           footnoteLabel: t('footnotes'),
           footnoteLabelTagName: 'h4',
-          footnoteLabelProperties: { className: ['markdown-footnotes-label'] },
+          // Word shows no heading above its footnotes, just a short rule.
+          footnoteLabelProperties: { className: ['sr-only'] },
           footnoteBackLabel: t('backToContent'),
         }}
         components={components}

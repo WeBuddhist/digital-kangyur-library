@@ -317,5 +317,7 @@
     "nothingToPreview": "Nothing to preview yet.",
     "footnoteMissingDefinition": "No note written for {{labels}}. Add a line like \"[^1]: your note\".",
     "footnoteUnusedDefinition": "Note {{labels}} is not referenced in the text, so it will not be shown.",
-    "backToContent": "Back to content"
+    "backToContent": "Back to content",
+    "escapedLineBreaksDetected": "This text contains \"\\n\" instead of real line breaks (copied from a JSON file), so footnotes can't be read.",
+    "fixLineBreaks": "Fix line breaks"
 }

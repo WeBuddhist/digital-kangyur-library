@@ -317,5 +317,7 @@
     "nothingToPreview": "སྔོན་ལྟ་བྱེད་རྒྱུ་ད་དུང་མེད།",
     "footnoteMissingDefinition": "{{labels}} ལ་མཆན་བུ་བྲིས་མེད། \"[^1]: མཆན་བུ།\" ལྟ་བུ་སྣོན་རོགས།",
     "footnoteUnusedDefinition": "མཆན་བུ་ {{labels}} ནང་དོན་ནང་སྦྲེལ་མེད་པས་སྟོན་མི་ཐུབ།",
-    "backToContent": "ནང་དོན་ལ་ཕྱིར་ལོག"
+    "backToContent": "ནང་དོན་ལ་ཕྱིར་ལོག",
+    "escapedLineBreaksDetected": "ཡིག་ཆ་འདིའི་ནང་ཐིག་ཕྲེང་དངོས་མིན་པར་ \"\\n\" ཡོད་པས་མཆན་བུ་ཀློག་མི་ཐུབ།",
+    "fixLineBreaks": "ཐིག་ཕྲེང་བཅོས་པ།"
 }

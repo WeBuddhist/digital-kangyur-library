@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Bold, Eye, FileCode, Italic, MessageSquarePlus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Textarea } from '@/components/ui/atoms/textarea';
-import { countFootnotes, findFootnoteIssues, insertFootnote, wrapSelection } from '@/utils/markdown';
+import { countFootnotes, findFootnoteIssues, insertFootnote, unescapeJsonText, wrapSelection } from '@/utils/markdown';
 import { MarkdownContent } from './MarkdownContent';
 
 type Mode = 'markdown' | 'preview';
@@ -44,8 +44,8 @@ export const MarkdownEditor = ({
   const [mode, setMode] = useState<Mode>('markdown');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const issues = useMemo(() => findFootnoteIssues(value || ''), [value]);
-  const footnoteCount = useMemo(() => countFootnotes(value || ''), [value]);
+  const issues = useMemo(() => findFootnoteIssues(unescapeJsonText(value || '')), [value]);
+  const footnoteCount = useMemo(() => countFootnotes(unescapeJsonText(value || '')), [value]);
   const minHeight = `${Math.max(rows, 3) * 1.75}rem`;
 
   /** Applies an edit, then restores focus and the caret/selection once React has re-rendered. */
@@ -65,6 +65,18 @@ export const MarkdownEditor = ({
     if (!el) return;
     const r = wrapSelection(value, el.selectionStart, el.selectionEnd, marker);
     applyEdit(r.value, r.selectionStart, r.selectionEnd);
+  };
+
+  /** Text pasted straight from a JSON file has `\n` escapes instead of line breaks - decode them. */
+  const handlePaste = (event: React.ClipboardEvent<HTMLTextAreaElement>) => {
+    const pasted = event.clipboardData.getData('text/plain');
+    const decoded = unescapeJsonText(pasted);
+    if (decoded === pasted) return;
+    event.preventDefault();
+    const el = event.currentTarget;
+    const start = el.selectionStart;
+    const next = value.slice(0, start) + decoded + value.slice(el.selectionEnd);
+    applyEdit(next, start + decoded.length);
   };
 
   const handleFootnote = () => {
@@ -122,6 +134,7 @@ export const MarkdownEditor = ({
           ref={textareaRef}
           value={value}
           onChange={(e) => onChange(e.target.value)}
+          onPaste={handlePaste}
           placeholder={placeholder}
           readOnly={readOnly}
           spellCheck={false}
@@ -138,6 +151,19 @@ export const MarkdownEditor = ({
           ) : (
             <p className="text-sm italic text-muted-foreground">{t('nothingToPreview')}</p>
           )}
+        </div>
+      )}
+
+      {!readOnly && unescapeJsonText(value) !== value && (
+        <div className="flex flex-wrap items-center justify-between gap-2 border-t border-input bg-amber-50 px-3 py-1.5 text-xs text-amber-800">
+          <span>{t('escapedLineBreaksDetected')}</span>
+          <button
+            type="button"
+            className="rounded border border-amber-300 bg-white px-2 py-0.5 font-medium hover:bg-amber-100"
+            onClick={() => onChange(unescapeJsonText(value))}
+          >
+            {t('fixLineBreaks')}
+          </button>
         </div>
       )}
 

@@ -87,6 +87,22 @@ export function wrapSelection(
   };
 }
 
+/**
+ * Text copied out of a JSON file (e.g. `backend/sample/2.json`) still carries
+ * its escapes: line breaks arrive as the two characters `\` `n`. Footnote
+ * definitions only work at the start of a line, so on one long line every
+ * `[^3]: note` is ignored. When a value has escaped breaks but no real ones,
+ * decode it the way JSON would; anything else is returned untouched.
+ */
+export function unescapeJsonText(text: string): string {
+  if (!text || text.includes('\n') || !/\\n/.test(text)) return text;
+  try {
+    return JSON.parse(`"${text.replace(/(^|[^\\])"/g, '$1\\"')}"`);
+  } catch {
+    return text.replace(/\\r\\n|\\n/g, '\n').replace(/\\t/g, '\t').replace(/\\"/g, '"');
+  }
+}
+
 /** Flattens Markdown to plain text for card excerpts, search results and meta tags. */
 export function markdownToPlain(markdown: string): string {
   return markdown

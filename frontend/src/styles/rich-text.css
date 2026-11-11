@@ -220,48 +220,70 @@
   line-height: 2;
 }
 
-/* Footnote reference: [^3] -> small raised number. */
+/* Footnote reference, Word style: [^3] -> a small raised number in the text. */
 .markdown-content sup {
-  font-size: 0.7em;
+  font-size: 0.65em;
   line-height: 0;
   vertical-align: super;
-  margin: 0 0.1em;
+  margin: 0 0.05em;
 }
 .markdown-content a[data-footnote-ref] {
+  color: hsl(var(--primary));
   text-decoration: none;
-  font-weight: 600;
   font-family: ui-sans-serif, system-ui, sans-serif;
-  padding: 0 0.15em;
-  border-radius: 3px;
+  padding: 0 0.1em;
+  border-radius: 2px;
+  cursor: pointer;
 }
-.markdown-content a[data-footnote-ref]::before { content: '['; }
-.markdown-content a[data-footnote-ref]::after { content: ']'; }
-.markdown-content a[data-footnote-ref]:hover { background: hsl(var(--primary) / 0.1); }
+.markdown-content a[data-footnote-ref]:hover { background: hsl(var(--primary) / 0.12); }
 
-/* Footnote list at the end of the content. */
+/* Footnote area, Word style: a short separator rule, then smaller numbered notes. */
 .markdown-content section[data-footnotes] {
-  margin-top: 1.25em;
-  padding-top: 0.75em;
-  border-top: 1px solid hsl(var(--border));
-  font-size: 0.875em;
-  opacity: 0.9;
-}
-.markdown-content .markdown-footnotes-label {
+  margin-top: 1.5em;
   font-size: 0.85em;
-  font-weight: 600;
-  margin: 0 0 0.4em;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  opacity: 0.75;
+  line-height: 1.6;
 }
-.markdown-content section[data-footnotes] ol { margin-bottom: 0; }
-.markdown-content section[data-footnotes] li { margin-bottom: 0.35em; }
+.markdown-content section[data-footnotes]::before {
+  content: '';
+  display: block;
+  width: 33%;
+  max-width: 12rem;
+  border-top: 1px solid currentColor;
+  opacity: 0.45;
+  margin-bottom: 0.6em;
+}
+.markdown-content.tibetan section[data-footnotes] { line-height: 1.9; }
+.markdown-content section[data-footnotes] ol {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+  counter-reset: md-footnote;
+}
+.markdown-content section[data-footnotes] li {
+  counter-increment: md-footnote;
+  position: relative;
+  padding-left: 1.4em;
+  margin-bottom: 0.3em;
+}
+.markdown-content section[data-footnotes] li::before {
+  content: counter(md-footnote);
+  position: absolute;
+  left: 0;
+  top: -0.35em;
+  font-size: 0.75em;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  color: hsl(var(--primary));
+}
 .markdown-content section[data-footnotes] li p { margin: 0; display: inline; }
+/* Word has no back-arrow; keep it as a quiet "jump back" affordance. */
 .markdown-content a[data-footnote-backref] {
   text-decoration: none;
-  margin-left: 0.25em;
+  margin-left: 0.3em;
+  font-size: 0.85em;
+  opacity: 0.45;
   font-family: ui-sans-serif, system-ui, sans-serif;
 }
+.markdown-content a[data-footnote-backref]:hover { opacity: 1; }
 
 /* Briefly highlight whichever end of a footnote link was just jumped to. */
 .markdown-content .markdown-footnote-flash {
