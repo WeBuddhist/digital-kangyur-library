@@ -126,7 +126,7 @@ export const MainCategoryView: React.FC = () => {
         order_index: updatedData.order_index,
         is_active: updatedData.is_active,
         only_content: updatedData.only_content || false,
-        content: updatedData.only_content ? updatedData.content : null,
+        content: null,
       });
     } else {
       updateSubCategoryMutation.mutate({
@@ -139,8 +139,7 @@ export const MainCategoryView: React.FC = () => {
           description_tibetan: updatedData.description_tibetan,
           order_index: updatedData.order_index,
           is_active: updatedData.is_active,
-          only_content: updatedData.only_content || false,
-          content: updatedData.only_content ? updatedData.content : null,
+          // only_content/content omitted so the backend keeps the saved content
         },
       });
     }

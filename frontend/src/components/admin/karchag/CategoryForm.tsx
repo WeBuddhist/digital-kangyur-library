@@ -50,7 +50,6 @@ export const CategoryForm = ({ isOpen, onClose, mode, data, mainCategories, defa
     category_type: mainCategoryId ? 'sub' : 'main',
     main_category_id: mainCategoryId,
     only_content: isContentOnlyMainCategory(mainCategoryId),
-    content: '',
   });
 
   const buildEditFormData = (source: any) => {
@@ -64,8 +63,8 @@ export const CategoryForm = ({ isOpen, onClose, mode, data, mainCategories, defa
       is_active: source.is_active !== undefined ? source.is_active : true,
       category_type: source.main_category_id ? 'sub' : 'main',
       main_category_id: mainCatId,
+      // Content is edited inside the subcategory view, not in this form
       only_content: isContentOnlyMainCategory(mainCatId),
-      content: source.content || '',
     };
   };
 
@@ -218,21 +217,6 @@ export const CategoryForm = ({ isOpen, onClose, mode, data, mainCategories, defa
                 type="number"
                 value={formData.order_index}
                 onChange={(e) => setFormData({ ...formData, order_index: Number.parseInt(e.target.value, 10) || 0 })}
-              />
-            </div>
-          )}
-
-          {/* Content Field (only for sub categories, automatically shown for content-only categories) */}
-          {formData.category_type === 'sub' && formData.only_content && (
-            <div className="space-y-2">
-              <Label htmlFor="content">{t('content')}</Label>
-              <RichTextEditor
-                id="content"
-                value={formData.content}
-                onChange={(html) => setFormData({ ...formData, content: html })}
-                rows={10}
-                tibetan={isTibetan}
-                placeholder="Enter content here..."
               />
             </div>
           )}
