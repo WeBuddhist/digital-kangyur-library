@@ -92,7 +92,7 @@ const Search: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-stone-50 to-white w-full font-tibetan">
+    <div className={cn('min-h-screen bg-gradient-to-b from-stone-50 to-white w-full', isTibetan ? 'font-tibetan' : 'font-sans')}>
       <KarchagSearch />
 
       <div className="container mx-auto px-4 py-8 max-w-3xl">

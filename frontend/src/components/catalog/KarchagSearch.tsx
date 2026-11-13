@@ -8,7 +8,7 @@ const KarchagSearch: React.FC = () => {
   const [searchParams] = useSearchParams();
   const location = useLocation();
   const navigate = useNavigate();
-  const { t } = useLanguage();
+  const { t, isTibetan } = useLanguage();
 
   const urlQuery = searchParams.get('q') || '';
   const [searchQuery, setSearchQuery] = useState(urlQuery);
@@ -34,7 +34,7 @@ const KarchagSearch: React.FC = () => {
 
   return (
     <div
-      className="relative py-10 sm:py-12 overflow-hidden text-white font-tibetan"
+      className={cn('relative py-10 sm:py-12 overflow-hidden text-white', isTibetan ? 'font-tibetan' : 'font-sans')}
       style={{ backgroundColor: '#e3821b' }}
     >
       <div
