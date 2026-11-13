@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/atoms/card';
 import { Button } from '@/components/ui/atoms/button';
@@ -8,6 +8,20 @@ import { NewsEntry } from '@/types/news';
 import { Edit, Trash2, Calendar, Search, Plus } from 'lucide-react';
 import api from '@/utils/api';
 import useLanguage from '@/hooks/useLanguage';
+import { AdminPagination } from '@/components/admin/AdminPagination';
+import { useServerPagedList } from '@/hooks/useServerPagedList';
+
+const NEWS_PER_PAGE = 12;
+
+const toNewsEntry = (item: any): NewsEntry => ({
+  id: item.id,
+  tibetanTitle: item.title?.tibetan || '',
+  englishTitle: item.title?.english || '',
+  tibetanDescription: item.description?.tibetan || '',
+  englishDescription: item.description?.english || '',
+  createdAt: item.published_at || item.created_at,
+  thumbnailUrl: item.thumbnail_url || '',
+});
 
 const NewsCard = ({
   news,
@@ -67,42 +81,24 @@ const NewsCard = ({
 
 const NewsAdmin = () => {
   const { t ,isTibetan} = useLanguage();
-  const [searchQuery, setSearchQuery] = useState('');
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingNews, setEditingNews] = useState<NewsEntry | null>(null);
-  const [newsEntries, setNewsEntries] = useState<NewsEntry[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchNews = async () => {
-      try {
-        setLoading(true);
-        const response = await api.getNews({ limit: 100 });
-        const transformedNews: NewsEntry[] = response.news.map((item: any) => ({
-          id: item.id,
-          tibetanTitle: item.title?.tibetan || '',
-          englishTitle: item.title?.english || '',
-          tibetanDescription: item.description?.tibetan || '',
-          englishDescription: item.description?.english || '',
-          createdAt: item.published_at || item.created_at,
-          thumbnailUrl: item.thumbnail_url || '',
-        }));
-        setNewsEntries(transformedNews);
-      } catch (error) {
-        console.error('Failed to fetch news:', error);
-        setNewsEntries([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchNews();
-  }, []);
-
-  const filteredEntries = newsEntries.filter(news =>
-    news.englishTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    news.englishDescription.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (news.tibetanTitle && news.tibetanTitle.toLowerCase().includes(searchQuery.toLowerCase()))
+  const {
+    items: newsEntries,
+    total,
+    page,
+    setPage,
+    searchQuery,
+    setSearchQuery,
+    isSearching,
+    loading,
+    reload,
+  } = useServerPagedList<NewsEntry>(
+    async (page, limit, search) => {
+      const response = await api.getNews({ page, limit, search });
+      return { items: response.news.map(toNewsEntry), total: response.pagination?.total ?? 0 };
+    },
+    { pageSize: NEWS_PER_PAGE, onError: (error) => console.error('Failed to fetch news:', error) }
   );
 
   const handleEdit = (news: NewsEntry) => {
@@ -136,18 +132,7 @@ const NewsAdmin = () => {
         });
       }
 
-      // Refresh news list
-      const response = await api.getNews({ limit: 100 });
-      const transformedNews: NewsEntry[] = response.news.map((item: any) => ({
-        id: item.id,
-        tibetanTitle: item.title?.tibetan || '',
-        englishTitle: item.title?.english || '',
-        tibetanDescription: item.description?.tibetan || '',
-        englishDescription: item.description?.english || '',
-        createdAt: item.published_at || item.created_at,
-        thumbnailUrl: item.thumbnail_url || '',
-      }));
-      setNewsEntries(transformedNews);
+      reload();
 
       setIsFormOpen(false);
       setEditingNews(null);
@@ -165,18 +150,7 @@ const NewsAdmin = () => {
     try {
       await api.deleteNews(id);
       
-      // Refresh news list
-      const response = await api.getNews({ limit: 100 });
-      const transformedNews: NewsEntry[] = response.news.map((item: any) => ({
-        id: item.id,
-        tibetanTitle: item.title?.tibetan || '',
-        englishTitle: item.title?.english || '',
-        tibetanDescription: item.description?.tibetan || '',
-        englishDescription: item.description?.english || '',
-        createdAt: item.published_at || item.created_at,
-        thumbnailUrl: item.thumbnail_url || '',
-      }));
-      setNewsEntries(transformedNews);
+      reload();
     } catch (error) {
       console.error('Error deleting news:', error);
       alert(t('errorDeletingNews'));
@@ -222,18 +196,25 @@ const NewsAdmin = () => {
         ) : (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredEntries.map(news => (
+              {newsEntries.map(news => (
                 <NewsCard key={news.id} news={news} onEdit={handleEdit} onDelete={handleDelete} />
               ))}
             </div>
 
-            {filteredEntries.length === 0 && searchQuery && (
+            <AdminPagination
+              currentPage={page}
+              totalItems={total}
+              itemsPerPage={NEWS_PER_PAGE}
+              onPageChange={setPage}
+            />
+
+            {newsEntries.length === 0 && isSearching && (
               <div className="text-center py-8">
                 <p className="text-gray-500">{t('noNewsArticlesFound')}</p>
               </div>
             )}
 
-            {filteredEntries.length === 0 && !searchQuery && (
+            {newsEntries.length === 0 && !isSearching && (
               <div className="text-center py-8">
                 <p className="text-gray-500">{t('noNewsArticlesAvailable')}</p>
               </div>

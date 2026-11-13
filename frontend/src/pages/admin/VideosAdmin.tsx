@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/atoms/card';
 import { Button } from '@/components/ui/atoms/button';
@@ -8,6 +8,10 @@ import { Edit, Trash2, Search, Plus, ExternalLink } from 'lucide-react';
 import api from '@/utils/api';
 import { toast } from 'sonner';
 import useLanguage from '@/hooks/useLanguage';
+import { AdminPagination } from '@/components/admin/AdminPagination';
+import { useServerPagedList } from '@/hooks/useServerPagedList';
+
+const VIDEOS_PER_PAGE = 12;
 
 interface Video {
   id: string;
@@ -130,21 +134,23 @@ const VideoCard = ({
 
 const VideosAdmin = () => {
   const { t ,isTibetan} = useLanguage();
-  const [searchQuery, setSearchQuery] = useState('');
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingVideo, setEditingVideo] = useState<Video | null>(null);
-  const [videos, setVideos] = useState<Video[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchVideos();
-  }, []);
-
-  const fetchVideos = async () => {
-    try {
-      setLoading(true);
-      const response = await api.getVideos({ limit: 100, is_active: 'false' });
-      const transformedVideos: Video[] = response.videos.map((item: any) => ({
+  const {
+    items: videos,
+    total,
+    page,
+    setPage,
+    searchQuery,
+    setSearchQuery,
+    isSearching,
+    loading,
+    reload: fetchVideos,
+  } = useServerPagedList<Video>(
+    async (page, limit, search) => {
+      // 'all' = active and inactive videos
+      const response = await api.getVideos({ page, limit, search, is_active: 'all' });
+      const items: Video[] = response.videos.map((item: any) => ({
         id: item.id,
         tibetanTitle: item.title?.tibetan || '',
         englishTitle: item.title?.english || '',
@@ -155,20 +161,15 @@ const VideosAdmin = () => {
         isActive: item.is_active ?? true,
         createdAt: item.created_at,
       }));
-      setVideos(transformedVideos);
-    } catch (error) {
-      console.error('Failed to fetch videos:', error);
-      toast.error(t('failedToLoadVideos'));
-      setVideos([]);
-    } finally {
-      setLoading(false);
+      return { items, total: response.pagination?.total ?? 0 };
+    },
+    {
+      pageSize: VIDEOS_PER_PAGE,
+      onError: (error) => {
+        console.error('Failed to fetch videos:', error);
+        toast.error(t('failedToLoadVideos'));
+      },
     }
-  };
-
-  const filteredVideos = videos.filter(video =>
-    video.englishTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    video.englishDescription.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    video.tibetanTitle?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleEdit = (video: Video) => {
@@ -196,7 +197,7 @@ const VideosAdmin = () => {
         toast.success(t('videoCreatedSuccessfully'));
       }
 
-      await fetchVideos();
+      fetchVideos();
       setIsFormOpen(false);
       setEditingVideo(null);
     } catch (error: any) {
@@ -213,7 +214,7 @@ const VideosAdmin = () => {
     try {
       await api.deleteVideo(id);
       toast.success(t('videoDeletedSuccessfully'));
-      await fetchVideos();
+      fetchVideos();
     } catch (error: any) {
       console.error('Error deleting video:', error);
       toast.error(error.message || t('errorDeletingVideo'));
@@ -259,18 +260,25 @@ const VideosAdmin = () => {
         ) : (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredVideos.map(video => (
+              {videos.map(video => (
                 <VideoCard key={video.id} video={video} onEdit={handleEdit} onDelete={handleDelete} />
               ))}
             </div>
 
-            {filteredVideos.length === 0 && searchQuery && (
+            <AdminPagination
+              currentPage={page}
+              totalItems={total}
+              itemsPerPage={VIDEOS_PER_PAGE}
+              onPageChange={setPage}
+            />
+
+            {videos.length === 0 && isSearching && (
               <div className="text-center py-8">
                 <p className="text-gray-500">{t('noVideosFound')}</p>
               </div>
             )}
 
-            {filteredVideos.length === 0 && !searchQuery && (
+            {videos.length === 0 && !isSearching && (
               <div className="text-center py-8">
                 <p className="text-gray-500">{t('noVideosAvailable')}</p>
               </div>

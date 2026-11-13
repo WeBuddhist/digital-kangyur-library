@@ -6,6 +6,8 @@ import { Input } from '@/components/ui/atoms/input';
 import { Badge } from '@/components/ui/atoms/badge';
 import { Label } from '@/components/ui/atoms/label';
 import { Edit, Trash2, Search, Plus } from 'lucide-react';
+import { AdminPagination } from '@/components/admin/AdminPagination';
+import { useServerPagedList } from '@/hooks/useServerPagedList';
 import {
   Select,
   SelectContent,
@@ -192,35 +194,33 @@ const UserForm = ({ isOpen, onClose, mode, data, onSave }: UserFormProps) => {
   );
 };
 
+const USERS_PER_PAGE = 12;
+
 const UsersAdmin = () => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [users, setUsers] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
   const [editingUser, setEditingUser] = useState<any>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [formMode, setFormMode] = useState<'create' | 'edit'>('create');
-
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  const fetchUsers = async () => {
-    try {
-      setLoading(true);
-      const response = await api.getUsers({ limit: 100 });
-      setUsers(response.users || []);
-    } catch (error) {
-      console.error('Failed to fetch users:', error);
-      toast.error('Failed to load users');
-      setUsers([]);
-    } finally {
-      setLoading(false);
+  const {
+    items: users,
+    total,
+    page,
+    setPage,
+    searchQuery,
+    setSearchQuery,
+    loading,
+    reload: fetchUsers,
+  } = useServerPagedList<any>(
+    async (page, limit, search) => {
+      const response = await api.getUsers({ page, limit, search });
+      return { items: response.users || [], total: response.pagination?.total ?? 0 };
+    },
+    {
+      pageSize: USERS_PER_PAGE,
+      onError: (error) => {
+        console.error('Failed to fetch users:', error);
+        toast.error('Failed to load users');
+      },
     }
-  };
-
-  const filteredUsers = users.filter(user =>
-    user.username?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    user.email?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleCreate = () => {
@@ -252,7 +252,7 @@ const UsersAdmin = () => {
       
       setIsFormOpen(false);
       setEditingUser(null);
-      await fetchUsers();
+      fetchUsers();
     } catch (error: any) {
       toast.error(error.message || `Error ${formMode === 'create' ? 'creating' : 'updating'} user`);
     }
@@ -263,7 +263,7 @@ const UsersAdmin = () => {
     try {
       await api.deleteUser(id);
       toast.success('User deleted successfully');
-      await fetchUsers();
+      fetchUsers();
     } catch (error: any) {
       toast.error(error.message || 'Error deleting user');
     }
@@ -311,8 +311,9 @@ const UsersAdmin = () => {
             <p className="text-gray-500">Loading users...</p>
           </div>
         ) : (
+          <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredUsers.map(user => (
+            {users.map(user => (
               <Card key={user.id} className="hover:shadow-md transition-shadow">
                 <CardHeader>
                   <div className="flex items-center justify-between">
@@ -339,6 +340,14 @@ const UsersAdmin = () => {
               </Card>
             ))}
           </div>
+
+          <AdminPagination
+            currentPage={page}
+            totalItems={total}
+            itemsPerPage={USERS_PER_PAGE}
+            onPageChange={setPage}
+          />
+          </>
         )}
 
         {/* User Form */}

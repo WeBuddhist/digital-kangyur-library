@@ -10,6 +10,15 @@ const prisma = new PrismaClient({ adapter });
 
 
 
+// Case-insensitive "contains" across several columns, for list search boxes
+const searchWhere = (search, fields) => {
+  const term = typeof search === 'string' ? search.trim() : '';
+  if (!term) return {};
+  return { OR: fields.map((field) => ({ [field]: { contains: term, mode: 'insensitive' } })) };
+};
+
+const TITLE_DESC_FIELDS = ['tibetan_title', 'english_title', 'tibetan_description', 'english_description'];
+
 // User operations
 const userService = {
   findById: async (id) => {
@@ -37,12 +46,27 @@ const userService = {
   },
   
   findAll: async (options = {}) => {
-    const { is_active } = options;
-    const where = {};
+    const { is_active, role, search, skip, take } = options;
+    const where = { ...searchWhere(search, ['username', 'email']) };
     if (is_active !== undefined) {
       where.is_active = is_active;
     }
-    return await prisma.user.findMany({ where });
+    if (role) {
+      where.role = role;
+    }
+    return await prisma.user.findMany({ where, skip, take, orderBy: { created_at: 'desc' } });
+  },
+
+  count: async (options = {}) => {
+    const { is_active, role, search } = options;
+    const where = { ...searchWhere(search, ['username', 'email']) };
+    if (is_active !== undefined) {
+      where.is_active = is_active;
+    }
+    if (role) {
+      where.role = role;
+    }
+    return await prisma.user.count({ where });
   },
   
   create: async (data) => {
@@ -132,8 +156,8 @@ const newsService = {
   },
   
   findAll: async (options = {}) => {
-    const { is_published, skip, take, orderBy } = options;
-    const where = {};
+    const { is_published, search, skip, take, orderBy } = options;
+    const where = { ...searchWhere(search, TITLE_DESC_FIELDS) };
     if (is_published !== undefined) {
       where.is_published = is_published;
     }
@@ -146,8 +170,8 @@ const newsService = {
   },
   
   count: async (options = {}) => {
-    const { is_published } = options;
-    const where = {};
+    const { is_published, search } = options;
+    const where = { ...searchWhere(search, TITLE_DESC_FIELDS) };
     if (is_published !== undefined) {
       where.is_published = is_published;
     }
@@ -268,8 +292,8 @@ const audioRecordingService = {
   },
   
   findAll: async (options = {}) => {
-    const { is_active, skip, take } = options;
-    const where = {};
+    const { is_active, search, skip, take } = options;
+    const where = { ...searchWhere(search, TITLE_DESC_FIELDS) };
     if (is_active !== undefined) {
       where.is_active = is_active;
     }
@@ -282,8 +306,8 @@ const audioRecordingService = {
   },
   
   count: async (options = {}) => {
-    const { is_active } = options;
-    const where = {};
+    const { is_active, search } = options;
+    const where = { ...searchWhere(search, TITLE_DESC_FIELDS) };
     if (is_active !== undefined) {
       where.is_active = is_active;
     }
@@ -313,8 +337,8 @@ const videoService = {
   },
   
   findAll: async (options = {}) => {
-    const { is_active, skip, take } = options;
-    const where = {};
+    const { is_active, search, skip, take } = options;
+    const where = { ...searchWhere(search, TITLE_DESC_FIELDS) };
     if (is_active !== undefined) {
       where.is_active = is_active;
     }
@@ -327,8 +351,8 @@ const videoService = {
   },
   
   count: async (options = {}) => {
-    const { is_active } = options;
-    const where = {};
+    const { is_active, search } = options;
+    const where = { ...searchWhere(search, TITLE_DESC_FIELDS) };
     if (is_active !== undefined) {
       where.is_active = is_active;
     }

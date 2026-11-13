@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/atoms/card';
 import { Button } from '@/components/ui/atoms/button';
@@ -6,33 +6,34 @@ import { Input } from '@/components/ui/atoms/input';
 import { Edit, Trash2, Search, Plus } from 'lucide-react';
 import api from '@/utils/api';
 import { toast } from 'sonner';
+import { AdminPagination } from '@/components/admin/AdminPagination';
+import { useServerPagedList } from '@/hooks/useServerPagedList';
+
+const RECORDINGS_PER_PAGE = 12;
 
 const AudioAdmin = () => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [recordings, setRecordings] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchRecordings();
-  }, []);
-
-  const fetchRecordings = async () => {
-    try {
-      setLoading(true);
-      const response = await api.getAudio({ limit: 100 });
-      setRecordings(response.recordings || []);
-    } catch (error) {
-      console.error('Failed to fetch audio recordings:', error);
-      toast.error('Failed to load audio recordings');
-      setRecordings([]);
-    } finally {
-      setLoading(false);
+  const {
+    items: recordings,
+    total,
+    page,
+    setPage,
+    searchQuery,
+    setSearchQuery,
+    loading,
+    reload: fetchRecordings,
+  } = useServerPagedList<any>(
+    async (page, limit, search) => {
+      // 'all' = active and inactive recordings
+      const response = await api.getAudio({ page, limit, search, is_active: 'all' });
+      return { items: response.recordings || [], total: response.pagination?.total ?? 0 };
+    },
+    {
+      pageSize: RECORDINGS_PER_PAGE,
+      onError: (error) => {
+        console.error('Failed to fetch audio recordings:', error);
+        toast.error('Failed to load audio recordings');
+      },
     }
-  };
-
-  const filteredRecordings = recordings.filter(recording =>
-    recording.title?.english?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    recording.title?.tibetan?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleDelete = async (id: string) => {
@@ -40,7 +41,7 @@ const AudioAdmin = () => {
     try {
       await api.deleteAudio(id);
       toast.success('Recording deleted successfully');
-      await fetchRecordings();
+      fetchRecordings();
     } catch (error: any) {
       toast.error(error.message || 'Error deleting recording');
     }
@@ -75,8 +76,9 @@ const AudioAdmin = () => {
             <p className="text-gray-500">Loading recordings...</p>
           </div>
         ) : (
+          <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredRecordings.map(recording => (
+            {recordings.map(recording => (
               <Card key={recording.id} className="hover:shadow-md transition-shadow">
                 <CardHeader>
                   <CardTitle className="text-lg">{recording.title?.english || 'Untitled'}</CardTitle>
@@ -104,6 +106,14 @@ const AudioAdmin = () => {
               </Card>
             ))}
           </div>
+
+          <AdminPagination
+            currentPage={page}
+            totalItems={total}
+            itemsPerPage={RECORDINGS_PER_PAGE}
+            onPageChange={setPage}
+          />
+          </>
         )}
       </div>
     </AdminLayout>

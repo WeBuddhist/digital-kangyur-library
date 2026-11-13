@@ -13,14 +13,17 @@ const getVideos = async (req, res, next) => {
 
     const skip = (page - 1) * limit;
     const take = limit;
-    const isActiveFilter = is_active === 'true';
+    // 'all' lists active and inactive (admin)
+    const isActiveFilter = is_active === 'all' ? undefined : is_active === 'true';
 
     const videos = await videoService.findAll({
+      is_active: isActiveFilter,
+      search,
       skip,
       take
     });
 
-    const total = await videoService.count({ is_active: isActiveFilter });
+    const total = await videoService.count({ is_active: isActiveFilter, search });
     const pagination = {
       page,
       limit,
@@ -30,19 +33,8 @@ const getVideos = async (req, res, next) => {
       has_prev: page > 1
     };
 
-    // Filter by search if provided
-    let filteredVideos = videos;
-    if (search) {
-      const searchLower = search.toLowerCase();
-      filteredVideos = videos.filter(v =>
-        v.tibetan_title?.toLowerCase().includes(searchLower) ||
-        v.english_title?.toLowerCase().includes(searchLower) ||
-        v.tibetan_description?.toLowerCase().includes(searchLower) ||
-        v.english_description?.toLowerCase().includes(searchLower)
-      );
-    }
 
-    const formattedVideos = filteredVideos.map(video => ({
+    const formattedVideos = videos.map(video => ({
       id: video.id,
       title: {
         tibetan: video.tibetan_title,

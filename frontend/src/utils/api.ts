@@ -84,13 +84,14 @@ export const api = {
   },
 
   // News
-  getNews: (params?: { page?: number; limit?: number; lang?: string; sort?: string; order?: string }) => {
+  getNews: (params?: { page?: number; limit?: number; lang?: string; sort?: string; order?: string; search?: string }) => {
     const queryParams = new URLSearchParams();
     if (params?.page) queryParams.append('page', params.page.toString());
     if (params?.limit) queryParams.append('limit', params.limit.toString());
     if (params?.lang) queryParams.append('lang', params.lang);
     if (params?.sort) queryParams.append('sort', params.sort);
     if (params?.order) queryParams.append('order', params.order);
+    if (params?.search) queryParams.append('search', params.search);
     const query = queryParams.toString();
     return fetchApi<{ news: any[]; pagination: any }>(`/news${query ? `?${query}` : ''}`);
   },
@@ -334,13 +335,14 @@ export const api = {
   },
 
   // Audio
-  getAudio: (params?: { page?: number; limit?: number; text_id?: string; search?: string; lang?: string }) => {
+  getAudio: (params?: { page?: number; limit?: number; text_id?: string; search?: string; lang?: string; is_active?: string }) => {
     const queryParams = new URLSearchParams();
     if (params?.page) queryParams.append('page', params.page.toString());
     if (params?.limit) queryParams.append('limit', params.limit.toString());
     if (params?.text_id) queryParams.append('text_id', params.text_id);
     if (params?.search) queryParams.append('search', params.search);
     if (params?.lang) queryParams.append('lang', params.lang);
+    if (params?.is_active) queryParams.append('is_active', params.is_active);
     const query = queryParams.toString();
     return fetchApi<{ recordings: any[]; pagination: any }>(`/audio${query ? `?${query}` : ''}`);
   },
@@ -394,12 +396,13 @@ export const api = {
   },
 
   // Admin - Users
-  getUsers: (params?: { page?: number; limit?: number; role?: string; is_active?: string }) => {
+  getUsers: (params?: { page?: number; limit?: number; role?: string; is_active?: string; search?: string }) => {
     const queryParams = new URLSearchParams();
     if (params?.page) queryParams.append('page', params.page.toString());
     if (params?.limit) queryParams.append('limit', params.limit.toString());
     if (params?.role) queryParams.append('role', params.role);
     if (params?.is_active) queryParams.append('is_active', params.is_active);
+    if (params?.search) queryParams.append('search', params.search);
     const query = queryParams.toString();
     return fetchApi<{ users: any[]; pagination: any }>(`/admin/users${query ? `?${query}` : ''}`);
   },

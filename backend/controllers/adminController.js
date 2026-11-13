@@ -78,9 +78,9 @@ const getDashboard = async (req, res, next) => {
 const getUsers = async (req, res, next) => {
   try {
     const { page, limit } = parsePaginationParams(req);
-    const { role, is_active } = req.query;
+    const { role, is_active, search } = req.query;
 
-    const options = {};
+    const options = { search };
     if (role) {
       options.role = role;
     }
@@ -88,8 +88,19 @@ const getUsers = async (req, res, next) => {
       options.is_active = is_active === 'true';
     }
 
-    const users = await userService.findAll(options);
-    const { items, pagination } = paginate(users, page, limit);
+    const [items, total] = await Promise.all([
+      userService.findAll({ ...options, skip: (page - 1) * limit, take: limit }),
+      userService.count(options),
+    ]);
+    const totalPages = Math.ceil(total / limit);
+    const pagination = {
+      page,
+      limit,
+      total,
+      total_pages: totalPages,
+      has_next: page < totalPages,
+      has_prev: page > 1,
+    };
 
     const formattedUsers = items.map(user => ({
       id: user.id,

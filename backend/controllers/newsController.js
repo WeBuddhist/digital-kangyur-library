@@ -10,6 +10,7 @@ const getNews = async (req, res, next) => {
       lang = 'en',
       sort = 'published_at',
       order = 'desc',
+      search,
     } = req.query;
 
     const skip = (page - 1) * limit;
@@ -24,12 +25,13 @@ const getNews = async (req, res, next) => {
 
     const news = await newsService.findAll({
       is_published: true,
+      search,
       skip,
       take,
       orderBy
     });
 
-    const total = await newsService.count({ is_published: true });
+    const total = await newsService.count({ is_published: true, search });
     const pagination = {
       page,
       limit: take,

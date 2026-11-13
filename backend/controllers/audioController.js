@@ -13,15 +13,17 @@ const getAudio = async (req, res, next) => {
 
     const skip = (page - 1) * limit;
     const take = limit;
-    const isActiveFilter = is_active === 'true';
+    // 'all' lists active and inactive (admin)
+    const isActiveFilter = is_active === 'all' ? undefined : is_active === 'true';
 
     const recordings = await audioRecordingService.findAll({
       is_active: isActiveFilter,
+      search,
       skip,
       take
     });
 
-    const total = await audioRecordingService.count({ is_active: isActiveFilter });
+    const total = await audioRecordingService.count({ is_active: isActiveFilter, search });
     const pagination = {
       page,
       limit,
@@ -31,17 +33,8 @@ const getAudio = async (req, res, next) => {
       has_prev: page > 1
     };
 
-    // Filter by search if provided
-    let filteredRecordings = recordings;
-    if (search) {
-      const searchLower = search.toLowerCase();
-      filteredRecordings = recordings.filter(r =>
-        r.tibetan_title?.toLowerCase().includes(searchLower) ||
-        r.english_title?.toLowerCase().includes(searchLower)
-      );
-    }
 
-    const formattedRecordings = filteredRecordings.map(recording => ({
+    const formattedRecordings = recordings.map(recording => ({
       id: recording.id,
       title: {
         tibetan: recording.tibetan_title,
