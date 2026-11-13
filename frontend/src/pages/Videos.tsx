@@ -215,7 +215,7 @@ const Videos = () => {
     <StickyFooterShell className={cn('bg-kangyur-light', isTibetan ? 'tibetan' : 'english')}>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 pb-16 pt-4">
         <div className="mb-6 text-center pt-8">
-          <h1 className="text-4xl font-bold text-kangyur-dark mb-3">
+          <h1 className="text-3xl md:text-4xl font-bold text-kangyur-dark mb-3">
             {t("kangyurVideos")}
           </h1>
           <p className="text-xl text-kangyur-dark/70 max-w-2xl mx-auto">

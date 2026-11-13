@@ -114,6 +114,7 @@ const getTimelineEvents = async (req, res, next) => {
           english: event.location_english,
         },
         significance: event.significance,
+        order_index: event.order_index,
         figures: [],
         sources: [],
         related_events: [],
@@ -203,6 +204,7 @@ const getTimelineEventById = async (req, res, next) => {
         english: event.location_english,
       },
       significance: event.significance,
+      order_index: event.order_index,
       figures: include_figures === 'true' && event.figures ? event.figures.map(f => ({
         id: f.id,
         name: {
@@ -251,19 +253,19 @@ const createTimelineEvent = async (req, res, next) => {
       sources = [],
     } = req.body;
 
-    if (!title_english || !description_english || !category || !year || !significance) {
+    // period_id is a required relation in the schema, so an event cannot be
+    // created without one.
+    if (!period_id || !title_english || !description_english || !category || !year || !significance) {
       throw new AppError('VALIDATION_ERROR', 'Required fields missing', 400);
     }
 
-    if (period_id) {
-      const period = await timelinePeriodService.findById(period_id);
-      if (!period) {
-        throw new AppError('RESOURCE_NOT_FOUND', 'Period not found', 404);
-      }
+    const period = await timelinePeriodService.findById(period_id);
+    if (!period) {
+      throw new AppError('RESOURCE_NOT_FOUND', 'Period not found', 404);
     }
 
     const event = await timelineEventService.create({
-      period_id: period_id || null,
+      period_id,
       title_tibetan,
       title_english,
       title_sanskrit,
@@ -336,6 +338,12 @@ const updateTimelineEvent = async (req, res, next) => {
       }
     });
 
+    if (updateData.period_id !== undefined) {
+      if (!updateData.period_id || !(await timelinePeriodService.findById(updateData.period_id))) {
+        throw new AppError('VALIDATION_ERROR', 'A valid period is required', 400);
+      }
+    }
+
     const updated = await timelineEventService.update(id, updateData);
 
     res.json({
@@ -367,7 +375,121 @@ const deleteTimelineEvent = async (req, res, next) => {
   }
 };
 
+const PERIOD_FIELDS = ['id_slug', 'name_english', 'name_tibetan', 'description', 'start_year', 'end_year'];
+
+const slugify = (text) =>
+  String(text || '')
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
+const pickPeriodData = (body) => {
+  const data = {};
+  PERIOD_FIELDS.forEach((field) => {
+    if (body[field] !== undefined) data[field] = body[field];
+  });
+  ['start_year', 'end_year'].forEach((field) => {
+    if (data[field] !== undefined) data[field] = Number.parseInt(data[field], 10);
+  });
+  ['name_tibetan', 'description'].forEach((field) => {
+    if (data[field] === '') data[field] = null;
+  });
+  if (data.id_slug !== undefined) data.id_slug = slugify(data.id_slug);
+  return data;
+};
+
+const validatePeriodYears = (start, end) => {
+  if (!Number.isInteger(start) || !Number.isInteger(end)) {
+    throw new AppError('VALIDATION_ERROR', 'Start and end years must be whole numbers', 400);
+  }
+  if (start > end) {
+    throw new AppError('VALIDATION_ERROR', 'Start year must not be after end year', 400);
+  }
+};
+
+const formatPeriod = (period) => ({
+  id: period.id,
+  id_slug: period.id_slug,
+  name: { tibetan: period.name_tibetan, english: period.name_english },
+  description: period.description,
+  start_year: period.start_year,
+  end_year: period.end_year,
+});
+
+const createTimelinePeriod = async (req, res, next) => {
+  try {
+    const data = pickPeriodData(req.body);
+    if (!data.name_english) {
+      throw new AppError('VALIDATION_ERROR', 'English name is required', 400);
+    }
+    if (!data.id_slug) data.id_slug = slugify(data.name_english);
+    if (!data.id_slug) {
+      throw new AppError('VALIDATION_ERROR', 'A slug is required', 400);
+    }
+    validatePeriodYears(data.start_year, data.end_year);
+
+    if (await timelinePeriodService.findBySlug(data.id_slug)) {
+      throw new AppError('VALIDATION_ERROR', 'A period with this slug already exists', 409);
+    }
+
+    const period = await timelinePeriodService.create(data);
+    res.status(201).json(formatPeriod(period));
+  } catch (error) {
+    next(error);
+  }
+};
+
+const updateTimelinePeriod = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const existing = await timelinePeriodService.findById(id);
+    if (!existing) {
+      throw new AppError('RESOURCE_NOT_FOUND', 'Period not found', 404);
+    }
+
+    const data = pickPeriodData(req.body);
+    if (data.name_english !== undefined && !data.name_english) {
+      throw new AppError('VALIDATION_ERROR', 'English name is required', 400);
+    }
+    if (data.id_slug !== undefined && !data.id_slug) {
+      throw new AppError('VALIDATION_ERROR', 'A slug is required', 400);
+    }
+    validatePeriodYears(data.start_year ?? existing.start_year, data.end_year ?? existing.end_year);
+
+    if (data.id_slug && data.id_slug !== existing.id_slug) {
+      if (await timelinePeriodService.findBySlug(data.id_slug)) {
+        throw new AppError('VALIDATION_ERROR', 'A period with this slug already exists', 409);
+      }
+    }
+
+    const period = await timelinePeriodService.update(id, data);
+    res.json(formatPeriod(period));
+  } catch (error) {
+    next(error);
+  }
+};
+
+const deleteTimelinePeriod = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const existing = await timelinePeriodService.findById(id);
+    if (!existing) {
+      throw new AppError('RESOURCE_NOT_FOUND', 'Period not found', 404);
+    }
+
+    // Events cascade-delete with their period (onDelete: Cascade in the schema).
+    await timelinePeriodService.delete(id);
+    res.json({ message: 'Period deleted successfully', deleted_events: existing.events?.length || 0 });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
+  createTimelinePeriod,
+  updateTimelinePeriod,
+  deleteTimelinePeriod,
   getTimelinePeriods,
   getTimelineEvents,
   getTimelineEventById,

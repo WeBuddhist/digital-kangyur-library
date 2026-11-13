@@ -254,7 +254,7 @@ export const TextForm = ({ isOpen, onClose, mode, data, subCategories, mainCateg
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-6" style={{fontFamily: isTibetan ? 'CustomTibetan' : ''}}>
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="sub_category_id">{t('subCategory')} <span className="text-red-600">*</span></Label>
                 <Select
@@ -291,7 +291,7 @@ export const TextForm = ({ isOpen, onClose, mode, data, subCategories, mainCateg
               </div> */}
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="derge_id">{t('dergeId')} <span className="text-red-600">*</span></Label>
                 <Input
@@ -311,7 +311,7 @@ export const TextForm = ({ isOpen, onClose, mode, data, subCategories, mainCateg
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="english_title">{t('englishTitle')} <span className="text-red-600">*</span></Label>
                 <Input
@@ -333,7 +333,7 @@ export const TextForm = ({ isOpen, onClose, mode, data, subCategories, mainCateg
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="sanskrit_title">{t('sanskritTitle')} </Label>
                 <Input
@@ -352,7 +352,7 @@ export const TextForm = ({ isOpen, onClose, mode, data, subCategories, mainCateg
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="yeshe_de_volume_number">{t('yesheDeVolumeNumber')} </Label>
                 <Input
@@ -409,7 +409,7 @@ export const TextForm = ({ isOpen, onClose, mode, data, subCategories, mainCateg
             </div>
 
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="sermon">{t('sermon')} </Label>
                 <Select
@@ -459,7 +459,7 @@ export const TextForm = ({ isOpen, onClose, mode, data, subCategories, mainCateg
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="pecing_link">{t('pecingLink')}</Label>
                 <Input

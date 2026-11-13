@@ -74,7 +74,7 @@ const NewsDetail = () => {
       <StickyFooterShell className="bg-kangyur-light">
         <div className="container mx-auto flex flex-1 flex-col px-4 py-16 sm:px-6 lg:px-8">
           <div className="flex flex-1 flex-col items-center justify-center px-4 pt-24 text-center">
-            <h1 className={cn('text-4xl font-bold text-kangyur-dark mb-4', isTibetan ? 'tibetan' : 'english')}>
+            <h1 className={cn('text-3xl md:text-4xl font-bold text-kangyur-dark mb-4', isTibetan ? 'tibetan' : 'english')}>
               {t('articleNotFound') || 'Article Not Found'}
             </h1>
             <p className={cn('text-kangyur-dark/70 mb-6', isTibetan ? 'tibetan' : 'english')}>

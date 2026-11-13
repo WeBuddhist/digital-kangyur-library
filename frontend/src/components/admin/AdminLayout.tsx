@@ -29,7 +29,7 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <div className={cn("min-h-screen  bg-gradient-to-b from-kangyur-cream to-white relative overflow-hidden", isTibetan ? 'tibetan' : 'english')}>
-      <div className='container'>
+      <div className='container px-0 sm:px-8'>
 
       <div className="absolute inset-0 z-0 overflow-hidden ">
         <div className="absolute top-20 left-10 w-64 h-64 rounded-full bg-kangyur-orange/5 blur-3xl"></div>
@@ -43,9 +43,9 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
         <div className="w-full bg-slate-50">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16 md:h-20">
-              <Link to="/admin" className="flex items-center space-x-3 text-kangyur-maroon transition-transform duration-300 transform hover:scale-105">
+              <Link to="/admin" className="flex items-center space-x-3 min-w-0 text-kangyur-maroon transition-transform duration-300 transform hover:scale-105">
                 <img src="/logo.svg" alt="Kangyur Karchag Logo" className="w-8 h-8 md:w-10 md:h-10" />
-                <span className={cn("font-bold text-xl md:text-2xl", isTibetan ? 'tibetan' : 'english')}>
+                <span className={cn("font-bold text-base sm:text-xl md:text-2xl truncate max-w-[50vw] sm:max-w-none", isTibetan ? 'tibetan' : 'english')}>
               {t('title')}
                 </span>
               </Link>
@@ -85,7 +85,7 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
       </header>
 
       {/* Main Content */}
-      <div className="pt-20 p-8 relative z-10">
+      <div className="pt-20 md:pt-24 px-3 pb-6 sm:px-6 md:px-8 md:pb-8 relative z-10">
         {children}
       </div>
       </div>

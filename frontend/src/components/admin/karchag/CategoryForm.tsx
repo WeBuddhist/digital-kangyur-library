@@ -161,7 +161,7 @@ export const CategoryForm = ({ isOpen, onClose, mode, data, mainCategories, defa
           )}
 
           {/* Names */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
               <Label htmlFor="name_tibetan">{t('tibetanName')} <span className="text-red-600">*</span> </Label>
               <Input
@@ -185,7 +185,7 @@ export const CategoryForm = ({ isOpen, onClose, mode, data, mainCategories, defa
           </div>
 
           {/* Descriptions */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
               <Label htmlFor="description_tibetan">{t('tibetanDescription')} </Label>
               <RichTextEditor

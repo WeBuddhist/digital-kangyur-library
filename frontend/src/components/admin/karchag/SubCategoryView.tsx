@@ -323,12 +323,12 @@ export const SubCategoryView: React.FC = () => {
       />
 
       {/* Header */}
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex-1">
-          <h1 className="text-3xl font-bold text-gray-800 py-[10px] tibetan text-left">{subCategory.name_tibetan}</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 py-[10px] tibetan text-left">{subCategory.name_tibetan}</h1>
           <p className="text-sm font-medium text-kangyur-maroon english mt-1">{subCategory.name_english}</p>
         </div>
-        <div className="flex items-center gap-2  "
+        <div className="flex flex-wrap items-center gap-2"
         style={{fontFamily: isTibetan ? 'CustomTibetan' : ''}}
         >
           {isContentOnly && isEditingContent ? (

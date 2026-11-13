@@ -166,9 +166,9 @@ const NewsAdmin = () => {
     <AdminLayout>
       <div className="space-y-6">
         {/* Header with Search and Create Button */}
-        <div className="flex items-center flex-col md:flex-row justify-between gap-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex-1">
-            <h1 className="text-3xl font-bold text-gray-800 py-[10px]">{t('manageNewsContent')}</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 py-[10px]">{t('manageNewsContent')}</h1>
             <p className="text-gray-600 mt-1">{t('createEditManageNews')}</p>
           </div>
           <Button onClick={() => setIsFormOpen(true)} style={{fontFamily: isTibetan ? 'CustomTibetan' : ''}}>

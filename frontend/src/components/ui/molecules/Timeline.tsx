@@ -6,7 +6,8 @@ import { cn } from '@/lib/utils';
 import useLanguage from '@/hooks/useLanguage';
 import { useQuery } from '@tanstack/react-query';
 import api from '@/utils/api';
-import { pickBilingualDisplay, pickBilingualText } from '@/utils/localizedContent';
+import { pickBilingualDisplay } from '@/utils/localizedContent';
+import { RichTextContent } from '@/components/ui/molecules/RichTextContent';
 import {
   Select,
   SelectContent,
@@ -20,6 +21,7 @@ type TimelineEvent = {
   id: string;
   period: string;
   tibetanPeriod?: string;
+  englishPeriod?: string;
   startYear: number;
   endYear: number;
   events: {
@@ -48,6 +50,15 @@ const Timeline = () => {
   const [tickInterval, setTickInterval] = useState<number | null>(null);
   const { t, isTibetan } = useLanguage();
 
+  // Built-in periods have translated titles; names edited in the admin (or new
+  // periods) take precedence when present for the current language.
+  const periodTitle = (period: TimelineEvent) => {
+    const fromDb = isTibetan ? period.tibetanPeriod : period.englishPeriod;
+    if (fromDb && fromDb.trim()) return fromDb;
+    const key = periodSlugToKey[period.id];
+    return key ? t(key) : period.englishPeriod || period.period;
+  };
+
   // Fetch timeline data using React Query
   const { data: timelineData = [], isLoading } = useQuery({
     queryKey: ['timeline', 'periods', 'events'],
@@ -63,6 +74,7 @@ const Timeline = () => {
           id: period.id_slug || period.id,
           period: periodSlugToKey[period.id_slug] || period.id_slug || period.id,
           tibetanPeriod: period.name?.tibetan,
+          englishPeriod: period.name?.english,
           startYear: period.start_year,
           endYear: period.end_year,
           events: periodEvents.map((event: any) => {
@@ -142,20 +154,54 @@ const Timeline = () => {
 
   return (
     <div className={cn("w-full")}>
-    
+      {/* Mobile: vertical list of periods (the scaled canvas below is too wide for phones) */}
+      <div className="md:hidden">
+        {isLoading && (
+          <div className="flex items-center justify-center h-40 bg-white border border-kangyur-orange/20 rounded-lg">
+            <p className="text-kangyur-dark/60">Loading timeline...</p>
+          </div>
+        )}
+        {!isLoading && timelineData.length === 0 && (
+          <div className="flex items-center justify-center h-40 bg-white border border-kangyur-orange/20 rounded-lg">
+            <p className="text-kangyur-dark/60">No timeline data available</p>
+          </div>
+        )}
+        {!isLoading && timelineData.length > 0 && (
+          <ol className="relative border-l-2 border-kangyur-orange/30 ml-2 space-y-4">
+            {timelineData.map((period) => (
+              <li key={period.id} className="pl-5 relative">
+                <span className="absolute -left-[9px] top-4 h-4 w-4 rounded-full bg-kangyur-orange border-2 border-white" />
+                <button
+                  type="button"
+                  onClick={() => setSelectedPeriod(period)}
+                  className="w-full text-left bg-gradient-to-br from-kangyur-cream to-white border border-kangyur-orange/30 rounded-lg p-4 active:scale-[0.99] transition-transform"
+                >
+                  <Badge variant="outline" className="text-xs mb-2 bg-kangyur-orange/10">
+                    {period.startYear} - {period.endYear}
+                  </Badge>
+                  <h4 className={cn('font-semibold text-base text-kangyur-maroon leading-snug', isTibetan && 'tibetan')}>
+                    {periodTitle(period)}
+                  </h4>
+                  <p className="text-xs text-kangyur-dark/50 mt-1">{period.events.length} events</p>
+                </button>
+              </li>
+            ))}
+          </ol>
+        )}
+      </div>
 
       {/* Timeline Container */}
-      <div className="bg-white border border-kangyur-orange/20 rounded-lg p-6 overflow-x-auto min-h-[480px] w-full">
+      <div className="hidden md:block bg-white border border-kangyur-orange/20 rounded-lg p-6 overflow-x-auto min-h-[480px] w-full">
         {/* Loading state */}
         {isLoading && (
-          <div className="flex items-center justify-center h-64 w-full min-w-[1000px]">
+          <div className="flex items-center justify-center h-64 w-full">
             <p className="text-kangyur-dark/60">Loading timeline...</p>
           </div>
         )}
 
         {/* Empty state */}
         {!isLoading && timelineData.length === 0 && (
-          <div className="flex items-center justify-center h-64 w-full min-w-[1000px]">
+          <div className="flex items-center justify-center h-64 w-full">
             <p className="text-kangyur-dark/60">No timeline data available</p>
           </div>
         )}
@@ -247,7 +293,7 @@ const Timeline = () => {
                             "font-semibold text-xs leading-tight mb-1",
                             isTibetan ? 'tibetan text-kangyur-maroon' : 'text-kangyur-maroon'
                           )}>
-                            {t(period.period)}
+                            {periodTitle(period)}
                           </h4>
                           <div className="text-xs text-kangyur-dark/50 mt-1">
                             {period.events.length} events
@@ -265,13 +311,13 @@ const Timeline = () => {
 
       {/* Dialog for selected period */}
       {selectedPeriod && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <Card className="max-w-3xl w-full max-h-[80vh] overflow-y-auto">
-            <CardContent className="p-6">
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4" onClick={() => setSelectedPeriod(null)}>
+          <Card className="max-w-3xl w-full max-h-[90dvh] sm:max-h-[80vh] overflow-y-auto rounded-b-none sm:rounded-b-lg" onClick={(e) => e.stopPropagation()}>
+            <CardContent className="p-4 sm:p-6">
               {/* Header */}
-              <div className="flex items-start justify-between mb-6">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
+              <div className="flex items-start justify-between gap-3 mb-6">
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mb-2">
                     <Badge variant="secondary" className="bg-kangyur-cream text-kangyur-maroon">
                       {selectedPeriod.startYear} - {selectedPeriod.endYear}
                     </Badge>
@@ -279,8 +325,8 @@ const Timeline = () => {
                       ({selectedPeriod.endYear - selectedPeriod.startYear} years)
                     </span>
                   </div>
-                  <h3 className={cn("text-2xl font-bold text-kangyur-maroon mb-2", isTibetan ? 'tibetan' : 'english')}>
-                    {t(selectedPeriod.period)}
+                  <h3 className={cn("text-xl sm:text-2xl font-bold text-kangyur-maroon mb-2", isTibetan ? 'tibetan' : 'english')}>
+                    {periodTitle(selectedPeriod)}
                   </h3>
                 </div>
                 <button 
@@ -301,7 +347,6 @@ const Timeline = () => {
                       event.descriptionTibetan,
                       event.descriptionEnglish
                     );
-                    const evText = pickBilingualText(isTibetan, event.descriptionTibetan, event.descriptionEnglish);
                     return (
                     <div key={event.id || `event-${event.year}-${index}`} className="border-l-4 border-kangyur-orange/30 pl-4 py-2">
                       <div className="flex items-center gap-2 mb-2">
@@ -310,14 +355,11 @@ const Timeline = () => {
                           {event.year}
                         </Badge>
                       </div>
-                      <p
-                        className={cn(
-                          'text-kangyur-dark leading-relaxed',
-                          evDisp.scriptIsTibetan && 'tibetan'
-                        )}
-                      >
-                        {evText}
-                      </p>
+                      <RichTextContent
+                        value={evDisp.text}
+                        tibetan={evDisp.scriptIsTibetan}
+                        className="text-kangyur-dark leading-relaxed"
+                      />
                     </div>
                     );
                   })}

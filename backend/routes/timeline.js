@@ -42,6 +42,67 @@ router.get('/periods', timelineController.getTimelinePeriods);
 
 /**
  * @swagger
+ * /timeline/periods:
+ *   post:
+ *     summary: Create a timeline period
+ *     tags: [Timeline]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [name_english, start_year, end_year]
+ *             properties:
+ *               id_slug: { type: string }
+ *               name_english: { type: string }
+ *               name_tibetan: { type: string }
+ *               description: { type: string }
+ *               start_year: { type: integer }
+ *               end_year: { type: integer }
+ *     responses:
+ *       201:
+ *         description: Period created
+ */
+router.post('/periods', authenticate, authorize('admin', 'editor'), timelineController.createTimelinePeriod);
+
+/**
+ * @swagger
+ * /timeline/periods/{id}:
+ *   put:
+ *     summary: Update a timeline period
+ *     tags: [Timeline]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Period updated
+ *   delete:
+ *     summary: Delete a timeline period and all of its events
+ *     tags: [Timeline]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Period deleted
+ */
+router.put('/periods/:id', authenticate, authorize('admin', 'editor'), timelineController.updateTimelinePeriod);
+router.delete('/periods/:id', authenticate, authorize('admin'), timelineController.deleteTimelinePeriod);
+
+/**
+ * @swagger
  * /timeline/events:
  *   get:
  *     summary: Get timeline events

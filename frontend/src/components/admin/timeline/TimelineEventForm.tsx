@@ -43,8 +43,13 @@ interface TimelineEventFormProps {
     location_english?: string;
     significance?: string;
     order_index?: number;
+    // GET /timeline/events/:id returns nested { title, description, location }
+    // objects rather than the flat column names above.
+    [key: string]: any;
   };
   onSave: (data: any) => Promise<void>;
+  /** Preselects the period when creating an event from a period's section. */
+  defaultPeriodId?: string;
 }
 
 const categoryOptions = [
@@ -67,7 +72,7 @@ const eraOptions = [
   { value: 'BCE', label: 'BCE' },
 ];
 
-export const TimelineEventForm = ({ isOpen, onClose, mode, data, onSave }: TimelineEventFormProps) => {
+export const TimelineEventForm = ({ isOpen, onClose, mode, data, onSave, defaultPeriodId }: TimelineEventFormProps) => {
   const [periods, setPeriods] = useState<any[]>([]);
   const [loadingPeriods, setLoadingPeriods] = useState(false);
   const [formData, setFormData] = useState({
@@ -104,18 +109,18 @@ export const TimelineEventForm = ({ isOpen, onClose, mode, data, onSave }: Timel
           description_english: data.description?.english || data.description_english || '',
           category: data.category || '',
           year: data.year?.toString() || '',
-          century: data.century || '',
+          century: data.century?.toString() || '',
           era: data.era || 'CE',
           is_approximate: data.is_approximate || false,
           location_tibetan: data.location?.tibetan || data.location_tibetan || '',
           location_english: data.location?.english || data.location_english || '',
           significance: data.significance || '',
-          order_index: data.order_index || 0,
+          order_index: data.order_index ?? 0,
         });
       } else {
         // Reset form for create mode
         setFormData({
-          period_id: '',
+          period_id: defaultPeriodId || '',
           title_tibetan: '',
           title_english: '',
           title_sanskrit: '',
@@ -133,7 +138,7 @@ export const TimelineEventForm = ({ isOpen, onClose, mode, data, onSave }: Timel
         });
       }
     }
-  }, [isOpen, mode, data]);
+  }, [isOpen, mode, data, defaultPeriodId]);
 
   const fetchPeriods = async () => {
     try {
@@ -157,29 +162,43 @@ export const TimelineEventForm = ({ isOpen, onClose, mode, data, onSave }: Timel
       return;
     }
 
-    // Prepare data for API
+    if (!formData.period_id) {
+      toast.error('Please select a period');
+      return;
+    }
+    if (!formData.category || !formData.significance) {
+      toast.error('Category and significance are required');
+      return;
+    }
+
+    const year = Number.parseInt(formData.year.toString(), 10);
+    if (Number.isNaN(year)) {
+      toast.error('Year must be a number');
+      return;
+    }
+
+    // Optional text fields are always sent (empty -> null) so that clearing a
+    // field in edit mode actually clears it in the database.
+    const orNull = (value: string) => (value && value.trim() !== '' ? value : null);
+    const century = Number.parseInt(formData.century.toString(), 10);
+
     const submitData: any = {
+      period_id: formData.period_id,
       title_english: formData.title_english,
       description_english: formData.description_english,
       category: formData.category,
-      year: Number.parseInt(formData.year.toString(), 10),
+      year,
       significance: formData.significance,
+      title_tibetan: orNull(formData.title_tibetan),
+      title_sanskrit: orNull(formData.title_sanskrit),
+      description_tibetan: isRichTextEmpty(formData.description_tibetan) ? null : formData.description_tibetan,
+      century: Number.isNaN(century) ? null : century,
+      era: formData.era || 'CE',
+      location_tibetan: orNull(formData.location_tibetan),
+      location_english: orNull(formData.location_english),
+      order_index: formData.order_index || 0,
+      is_approximate: formData.is_approximate,
     };
-
-    // Add optional fields if they have values
-    if (formData.period_id && formData.period_id !== '') {
-      submitData.period_id = formData.period_id;
-    }
-    if (formData.title_tibetan) submitData.title_tibetan = formData.title_tibetan;
-    if (formData.title_sanskrit) submitData.title_sanskrit = formData.title_sanskrit;
-    if (formData.description_tibetan) submitData.description_tibetan = formData.description_tibetan;
-    if (formData.century) submitData.century = formData.century;
-    if (formData.era) submitData.era = formData.era;
-    if (formData.location_tibetan) submitData.location_tibetan = formData.location_tibetan;
-    if (formData.location_english) submitData.location_english = formData.location_english;
-    if (formData.order_index) submitData.order_index = formData.order_index;
-    
-    submitData.is_approximate = formData.is_approximate;
 
     await onSave(submitData);
   };
@@ -193,7 +212,7 @@ export const TimelineEventForm = ({ isOpen, onClose, mode, data, onSave }: Timel
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Period Selection */}
           <div className="space-y-2">
-            <Label htmlFor="period_id">Period (Optional)</Label>
+            <Label htmlFor="period_id">Period *</Label>
             <Select
               value={formData.period_id}
               onValueChange={(value) => setFormData({ ...formData, period_id: value })}
@@ -203,7 +222,6 @@ export const TimelineEventForm = ({ isOpen, onClose, mode, data, onSave }: Timel
                 <SelectValue placeholder={loadingPeriods ? "Loading periods..." : "Select a period"} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="None">None</SelectItem>
                 {periods.map((period) => (
                   <SelectItem key={period.id} value={period.id}>
                     {period.name?.english || period.id_slug} ({period.start_year} - {period.end_year})
@@ -214,7 +232,7 @@ export const TimelineEventForm = ({ isOpen, onClose, mode, data, onSave }: Timel
           </div>
 
           {/* Titles */}
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="space-y-2">
               <Label htmlFor="title_english">English Title *</Label>
               <Input
@@ -247,7 +265,7 @@ export const TimelineEventForm = ({ isOpen, onClose, mode, data, onSave }: Timel
           </div>
 
           {/* Descriptions */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="description_english">English Description *</Label>
               <RichTextEditor
@@ -272,7 +290,7 @@ export const TimelineEventForm = ({ isOpen, onClose, mode, data, onSave }: Timel
           </div>
 
           {/* Category, Year, Century, Era */}
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="space-y-2">
               <Label htmlFor="category">Category *</Label>
               <Select
@@ -309,7 +327,8 @@ export const TimelineEventForm = ({ isOpen, onClose, mode, data, onSave }: Timel
                 id="century"
                 value={formData.century}
                 onChange={(e) => setFormData({ ...formData, century: e.target.value })}
-                placeholder="e.g., 8th"
+                type="number"
+                placeholder="e.g., 8"
               />
             </div>
             <div className="space-y-2">
@@ -333,7 +352,7 @@ export const TimelineEventForm = ({ isOpen, onClose, mode, data, onSave }: Timel
           </div>
 
           {/* Significance and Approximate */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="significance">Significance *</Label>
               <Select
@@ -364,7 +383,7 @@ export const TimelineEventForm = ({ isOpen, onClose, mode, data, onSave }: Timel
           </div>
 
           {/* Locations */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="location_english">Location (English)</Label>
               <Input

@@ -306,6 +306,27 @@ export const api = {
   },
 
 
+  // Timeline Periods
+  createTimelinePeriod: (data: any) => {
+    return fetchApi<any>('/timeline/periods', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  updateTimelinePeriod: (id: string, data: any) => {
+    return fetchApi<any>(`/timeline/periods/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  },
+
+  deleteTimelinePeriod: (id: string) => {
+    return fetchApi<{ message: string; deleted_events: number }>(`/timeline/periods/${id}`, {
+      method: 'DELETE',
+    });
+  },
+
   // Timeline Events
   getTimelineEventById: (id: string, params?: { lang?: string }) => {
     const queryParams = new URLSearchParams();

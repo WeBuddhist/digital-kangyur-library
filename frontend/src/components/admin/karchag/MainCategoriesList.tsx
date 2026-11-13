@@ -149,9 +149,9 @@ export const MainCategoriesList: React.FC<MainCategoriesListProps> = ({
   return (
     <div className="space-y-6" style={{fontFamily: isTibetan ? 'CustomTibetan' : ''}}>
       {/* Header with Search and Create Button */}
-      <div className="flex items-center flex-col md:flex-row justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex-1">
-          <h1 className={`text-3xl font-bold text-gray-800 py-[10px] ${isTibetan ? 'tibetan' : 'english'}`}>{t('manageKarchagContent')}</h1>
+          <h1 className={`text-2xl sm:text-3xl font-bold text-gray-800 py-[10px] ${isTibetan ? 'tibetan' : 'english'}`}>{t('manageKarchagContent')}</h1>
           <p className={`text-gray-600 mt-1 ${isTibetan ? 'tibetan' : 'english'}`}>{t('createEditManage')}</p>
         </div>
         <Button onClick={handleCreate}>

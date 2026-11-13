@@ -399,7 +399,7 @@ const TextDetail = () => {
           <div className="mb-6">
             <h1
               className={cn(
-                'text-4xl font-bold text-primary',
+                'text-3xl md:text-4xl font-bold text-primary',
                 pickBilingualDisplay(isTibetan, textData?.title?.tibetan, textData?.title?.english).scriptIsTibetan && 'tibetan'
               )}
             >

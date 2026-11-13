@@ -1,7 +1,7 @@
 import React from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { Link } from 'react-router-dom';
-import { NewspaperIcon, FileText, Video, Users } from 'lucide-react';
+import { NewspaperIcon, FileText, Video, Users, History } from 'lucide-react';
 import useLanguage from '@/hooks/useLanguage';
 import { cn } from '@/lib/utils';
 
@@ -33,6 +33,12 @@ const Dashboard = () => {
       icon: Users,
       path: "/admin/users",
       descriptionKey: "manageSystemUsers"
+    },
+    {
+      titleKey: "history",
+      icon: History,
+      path: "/admin/timeline",
+      descriptionKey: "manageHistoryTimeline"
     }
   ];
 
@@ -40,7 +46,7 @@ const Dashboard = () => {
     <AdminLayout>
       <div className="space-y-8">
         <div className="text-center py-2">
-          <h1 className={cn("text-3xl font-bold text-gray-800 mb-2 pt-5", isTibetan ? 'tibetan' : 'english')}>{t('contentManagementBoard')}</h1>
+          <h1 className={cn("text-2xl sm:text-3xl font-bold text-gray-800 mb-2 pt-5", isTibetan ? 'tibetan' : 'english')}>{t('contentManagementBoard')}</h1>
           <p className={cn("text-gray-600", isTibetan ? 'tibetan' : 'english')}>{t('manageContentAcrossCategories')}</p>
         </div>
         

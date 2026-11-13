@@ -136,7 +136,7 @@ export const VideoForm = ({ isOpen, onClose, mode, data, onSave }: VideoFormProp
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-6" style={{fontFamily: isTibetan ? 'CustomTibetan' : ''}}>
           {/* Titles */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="english_title">{t('englishTitle')} <span className="text-red-500">*</span></Label>
               <Input
@@ -161,7 +161,7 @@ export const VideoForm = ({ isOpen, onClose, mode, data, onSave }: VideoFormProp
           </div>
 
           {/* Descriptions */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="english_description">{t('englishDescription')}</Label>
               <RichTextEditor

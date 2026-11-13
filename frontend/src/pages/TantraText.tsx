@@ -93,7 +93,7 @@ const TantraText = () => {
           <div className="mb-6">
             <h1
               className={cn(
-                'text-4xl font-bold text-primary',
+                'text-3xl md:text-4xl font-bold text-primary',
                 pickBilingualDisplay(isTibetan, text.title?.tibetan, text.title?.english).scriptIsTibetan && 'tibetan'
               )}
             >

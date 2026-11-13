@@ -535,7 +535,7 @@ export const TextEditModal = ({
                 <TabsContent value="metadata" className="flex-1  overflow-y-auto p-6 m-0" style={{fontFamily: isTibetan ? 'CustomTibetan' : ''}}>
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="space-y-4">
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {!hideSubCategorySelect && (
                         <div className="space-y-2">
                           <Label htmlFor="sub_category_id">{t('subCategory')} <span className="text-red-600">*</span></Label>
@@ -568,7 +568,7 @@ export const TextEditModal = ({
                         </div> */}
                       </div>
 
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <Label htmlFor="alternative_title">{t('alternativeTitle')}</Label>
                           <Input
@@ -588,7 +588,7 @@ export const TextEditModal = ({
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <Label htmlFor="derge_id">{t('dergeId')} <span className="text-red-600">*</span></Label>
                           <Input
@@ -608,7 +608,7 @@ export const TextEditModal = ({
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-3 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div className="space-y-2">
                           <Label htmlFor="chapter_number">{t('chapter')}</Label>
                           <Input
@@ -641,7 +641,7 @@ export const TextEditModal = ({
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <Label htmlFor="interpretation">{t('interpretation')}</Label>
                           <Select
@@ -680,7 +680,7 @@ export const TextEditModal = ({
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="space-y-2">
                           <Label htmlFor="tibetan_title">{t('tibetanTitle')} <span className="text-red-600">*</span></Label>
                           <Input
@@ -702,7 +702,7 @@ export const TextEditModal = ({
                        
                       </div>
 
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <Label htmlFor="sanskrit_title">{t('sanskritTitle')} </Label>
                           <Input
@@ -721,7 +721,7 @@ export const TextEditModal = ({
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <Label htmlFor="yeshe_de_volume_number">{t('yesheDeVolumeNumber')} </Label>
                           <Input
@@ -787,7 +787,7 @@ export const TextEditModal = ({
                         )}
                       </div>
 
-                      <div className="grid grid-cols-3 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div className="space-y-2">
                           <Label htmlFor="sermon">{t('sermon')} </Label>
                           <Select
@@ -837,7 +837,7 @@ export const TextEditModal = ({
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <Label htmlFor="pecing_link">{t('pecingLink')}</Label>
                           <Input
@@ -998,7 +998,7 @@ export const TextEditModal = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-        <DialogContent className="container max-w-[80vw] px-10 max-h-[90vh] p-0 overflow-scroll flex flex-col">
+        <DialogContent className="container max-w-[95vw] md:max-w-[80vw] px-0 md:px-10 max-h-[90vh] p-0 overflow-scroll flex flex-col">
           <DialogHeader className="px-6 pt-6 pb-4 border-b">
             <DialogTitle>
               {text.english_title || text.tibetan_title || t('editText')}

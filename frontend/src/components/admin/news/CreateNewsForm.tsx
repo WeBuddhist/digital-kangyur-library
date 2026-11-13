@@ -145,7 +145,7 @@ export const NewsForm = ({ isOpen, onClose, mode, data, onSave }: NewsFormProps)
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-6" style={{fontFamily: isTibetan ? 'CustomTibetan' : ''}}>
           {/* Titles */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="english_title">{t('englishTitle')}</Label>
               <Input
@@ -170,7 +170,7 @@ export const NewsForm = ({ isOpen, onClose, mode, data, onSave }: NewsFormProps)
           </div>
 
           {/* Content */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="english_content">{t('englishContent')}</Label>
               <RichTextEditor
@@ -257,7 +257,7 @@ export const NewsForm = ({ isOpen, onClose, mode, data, onSave }: NewsFormProps)
           </div>
 
           {/* Published Date and Active Status */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="published_date">{t('publishedDate')}</Label>
               <Input

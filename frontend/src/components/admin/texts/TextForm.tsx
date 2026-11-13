@@ -164,7 +164,7 @@ export const TextForm = ({ isOpen, onClose, mode, textId, onSave }: TextFormProp
             <DialogTitle>Create New Text</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleCreateSubmit} className="space-y-4" style={{fontFamily: isTibetan ? 'CustomTibetan' : ''}}>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="category_id">Category *</Label>
                 <Select
@@ -196,7 +196,7 @@ export const TextForm = ({ isOpen, onClose, mode, textId, onSave }: TextFormProp
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="title_english">English Title</Label>
                 <Input
@@ -216,7 +216,7 @@ export const TextForm = ({ isOpen, onClose, mode, textId, onSave }: TextFormProp
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="title_sanskrit">Sanskrit Title</Label>
                 <Input
@@ -245,7 +245,7 @@ export const TextForm = ({ isOpen, onClose, mode, textId, onSave }: TextFormProp
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="order_index">Order Index</Label>
                 <Input
@@ -309,7 +309,7 @@ export const TextForm = ({ isOpen, onClose, mode, textId, onSave }: TextFormProp
             </TabsList>
 
             <TabsContent value="details" className="space-y-4 mt-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>English Title</Label>
                   <Input
