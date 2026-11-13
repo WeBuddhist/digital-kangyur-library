@@ -44,9 +44,6 @@ const KarchagSearch: React.FC = () => {
         }}
       />
       <div className="container relative mx-auto px-4 sm:px-6 lg:px-8">
-        <p className="text-center text-white/90 text-sm font-medium tracking-wide mb-3">
-          {t('searchCatalogSubtitle') || 'Search the Kangyur catalog'}
-        </p>
         <div className="max-w-xl mx-auto">
           <div
             className={cn(

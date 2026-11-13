@@ -14,7 +14,7 @@ import { pickBilingualDisplay, pickBilingualText } from '@/utils/localizedConten
 import KarchagSearch from '@/components/catalog/KarchagSearch';
 import { Input } from '@/components/ui/atoms/input';
 import { Card, CardContent } from '@/components/ui/atoms/card';
-import { RichTextContent } from '@/components/ui/molecules/RichTextContent';
+import { MarkdownContent } from '@/components/ui/molecules/MarkdownContent';
 
 const Catalog = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -536,7 +536,7 @@ const Catalog = () => {
                       className="p-4 sm:p-6"
                       style={{ fontFamily: scriptIsTibetan ? 'CustomTibetan' : '' }}
                     >
-                      <RichTextContent
+                      <MarkdownContent
                         value={selectedSubCategory.content}
                         tibetan={scriptIsTibetan}
                         className="text-base sm:text-lg leading-relaxed text-gray-600 break-words"

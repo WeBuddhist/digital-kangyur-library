@@ -3,8 +3,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/atoms/button';
 import { Input } from '@/components/ui/atoms/input';
-import { RichTextEditor } from '@/components/ui/molecules/RichTextEditor';
-import { RichTextContent } from '@/components/ui/molecules/RichTextContent';
+import { MarkdownEditor } from '@/components/ui/molecules/MarkdownEditor';
+import { MarkdownContent } from '@/components/ui/molecules/MarkdownContent';
 import { Card } from '@/components/ui/atoms/card';
 import { Edit, Search, Plus } from 'lucide-react';
 import api from '@/utils/api';
@@ -380,7 +380,7 @@ export const SubCategoryView: React.FC = () => {
         // For Tantra / Scholarly Work: Show content only
         <Card className="p-6 bg-gray-50">
           {isEditingContent ? (
-            <RichTextEditor
+            <MarkdownEditor
               value={contentDraft}
               onChange={setContentDraft}
               rows={16}
@@ -389,7 +389,7 @@ export const SubCategoryView: React.FC = () => {
               placeholder={t('enterContentHere')}
             />
           ) : (
-            <RichTextContent
+            <MarkdownContent
               value={subCategory.content || ''}
               tibetan
               className="text-gray-700"

@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 import useLanguage from '@/hooks/useLanguage';
 import api from '@/utils/api';
 import { pickBilingualDisplay, pickBilingualText } from '@/utils/localizedContent';
+import { MarkdownContent } from '@/components/ui/molecules/MarkdownContent';
 
 const TantraText = () => {
   const { id } = useParams<{ id: string }>();
@@ -103,14 +104,11 @@ const TantraText = () => {
           <Card className="border border-kangyur-orange/10 rounded-xl shadow-sm">
             <CardContent className="p-6">
               <ScrollArea className="h-[70vh]">
-                <div
-                  className={cn(
-                    'text-lg leading-relaxed whitespace-pre-line pr-2',
-                    contentDisp.scriptIsTibetan && 'tibetan'
-                  )}
-                >
-                  {content}
-                </div>
+                <MarkdownContent
+                  value={content}
+                  tibetan={contentDisp.scriptIsTibetan}
+                  className="text-lg leading-relaxed pr-2 break-words"
+                />
               </ScrollArea>
             </CardContent>
           </Card>
